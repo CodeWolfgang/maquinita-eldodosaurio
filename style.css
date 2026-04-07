@@ -1,0 +1,309 @@
+/* style.css */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #0f6a9e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.maquina-container {
+    background-color: #f7a000;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    width: 100%;
+    max-width: 600px;
+}
+
+/* --- TABLERO PRINCIPAL (RNG Anillo) --- */
+.tablero-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    gap: 2px;
+    background-color: #222;
+    border: 4px solid #fff;
+}
+
+.casilla {
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    aspect-ratio: 1 / 1;
+    border: 1px solid #ccc;
+    transition: background-color 0.1s, box-shadow 0.1s;
+}
+
+/* Punto 3 y 4: Centro de pantalla redefinido */
+.centro-pantalla {
+    grid-column: 2 / 7;
+    grid-row: 2 / 7;
+    background-color: #e0f7fa;
+    display: flex;
+    flex-direction: column; /* Stack title, LEDs, sequence display */
+    justify-content: center;
+    align-items: center;
+    position: relative; /* For overlapping elements */
+    border: 2px solid #333;
+}
+
+.centro-pantalla h2 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.led-container {
+    display: flex;
+    gap: 145px; 
+    position: absolute;
+    bottom: 40px;
+}
+
+.led {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #555;
+    background: radial-gradient(#666, #222); /* Off/neutral state color */
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+}
+/* For visual reference, an 'on' state description: */
+/* .led.activa { background: radial-gradient(#highlighed-color, #highlighted-shadow); box-shadow: 0 0 10px #highlighted-color; } */
+
+/* Punto 4: Secuencia BAR / ONCE MORE (Prensa Start) */
+.sec-prensa-start {
+    display: none; /* Hidden by default */
+    text-align: center;
+    background: rgba(255, 255, 255, 0.9); /* Overlapping effect */
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 2px solid #333;
+    position: absolute; /* Place center/center within .centro-pantalla */
+    z-index: 10;
+}
+
+.sec-legend {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+    text-transform: uppercase;
+}
+
+.sec-number {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-top: 5px;
+}
+
+/* --- PANEL DE APUESTAS (Puntos 1, 2 y 3) --- */
+.panel-apuestas {
+    display: flex;
+    flex-direction: column; 
+    gap: 15px; 
+    margin-top: 20px;
+    background-color: #111;
+    padding: 15px;
+    border-radius: 5px;
+    border: 3px solid #f7a000;
+}
+
+/* Fila de las frutas */
+.bet-row {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 8px;
+}
+
+/* Bloque que contiene Payout + Botón + Contador */
+.bet-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Punto 2: Payout Labels (Cabecera) */
+.premio-label {
+    /* Style to resemble image_0.png red numbers */
+    color: #ff3333; /* Prominent highlighted color */
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.boton-apuesta {
+    background-color: #ddd;
+    width: 100%; /* Fill the block */
+    padding: 10px 0;
+    text-align: center;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    border-bottom: 4px solid #999;
+}
+
+.boton-apuesta:active {
+    border-bottom: 0px;
+    transform: translateY(4px);
+}
+
+/* Contenedor de botones de Acción (Doble + Start) */
+.action-buttons-container {
+    display: flex;
+    flex-wrap: wrap; /* Esto evita que los botones se salgan */
+    justify-content: flex-start; 
+    gap: 10px;
+    align-items: center;
+}
+
+/* Punto 3: Botones de Doble o Nada */
+.btn-group-doble {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-doble {
+    /* Resembles black nav buttons in image_0.png */
+    background-color: #333;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: 3px solid #666;
+    border-radius: 5px;
+    cursor: pointer;
+    border-bottom: 5px solid #1a1a1a;
+}
+.btn-doble:active {
+    border-bottom: 0px;
+    transform: translateY(5px);
+}
+
+.btn-iniciar {
+    background-color: #28a745;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    border-bottom: 5px solid #1a6b2c;
+}
+
+.btn-iniciar:active {
+    border-bottom: 0px;
+    transform: translateY(5px);
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #111;
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    border: 3px solid #f7a000;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.marcador span {
+    color: #ff3333;
+    font-size: 1.5rem;
+    margin-left: 5px;
+}
+
+.btn-amarillo {
+    background-color: #ffd700;
+    color: #000;
+    font-weight: bold;
+    padding: 8px 15px;
+    border: 2px solid #b8860b;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-amarillo:active { transform: translateY(2px); }
+
+/* Botones de Control Extra */
+.btn-reset {
+    background-color: #dc3545;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    border-bottom: 4px solid #8b0000;
+    margin-right: auto; /* Lo empuja a la izquierda */
+}
+.btn-reset:active { border-bottom: 0px; transform: translateY(4px); }
+
+/* Estilo para el botón Start bloqueado */
+.btn-iniciar:disabled {
+    background-color: #555;
+    border-bottom: 5px solid #222;
+    color: #888;
+    cursor: not-allowed;
+}
+
+/* --- CLASE ACTIVA DE LA RULETA (Asegurada) --- */
+.casilla.activa {
+    background-color: #ffb3b3 !important;
+    box-shadow: inset 0 0 15px red, 0 0 10px red !important;
+    border: 3px solid red !important;
+    color: #000 !important;
+    z-index: 10;
+}
+
+.btn-cobrar {
+    background-color: #007bff; /* Azul vibrante */
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    border-bottom: 4px solid #0056b3;
+    margin-right: auto; /* Empuja el resto de botones a la derecha */
+}
+
+.btn-cobrar:active { 
+    border-bottom: 0px; 
+    transform: translateY(4px); 
+}
+
+/* Ajuste para el botón reset para que no se separe de cobrar */
+.btn-reset {
+    margin-right: 0; 
+}
+
+.btn-group-doble {
+    display: flex;
+    gap: 10px;
+    align-items: center; /* Alinea los botones de diferentes tamaños */
+}
+
+.led.encendido {
+    background: radial-gradient(#ff6666, #cc0000);
+    box-shadow: 0 0 15px #ff0000, inset 0 2px 4px rgba(0,0,0,0.5);
+    border: 2px solid #ffcccc;
+}

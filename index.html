@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maquinita de Abarrotes - El Dodosaurio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="maquina-container">
+        
+        <div class="top-bar">
+            <div class="marcador win-box">WIN: <span id="win-counter">0</span></div>
+            <div class="marcador credit-box">CREDIT: <span id="credit-counter">0</span></div>
+        </div>
+
+        <div class="tablero-grid">
+            
+            <div class="casilla top" data-id="1">🍊</div>
+            <div class="casilla top" data-id="2">🔔</div>
+            <div class="casilla top" data-id="3">BAR 50</div>
+            <div class="casilla top" data-id="4">BAR 100</div>
+            <div class="casilla top" data-id="5">🍎</div>
+            <div class="casilla top" data-id="6">🍒</div>
+            <div class="casilla top" data-id="7">🍇</div>
+
+            <div class="casilla left" data-id="24">🍒</div>
+            <div class="centro-pantalla">
+                <h2>¡Suerte!</h2>
+                
+                <div class="led-container">
+                    <div class="led led-left"></div>
+                    <div class="led led-right"></div>
+                </div>
+
+                <div class="sec-prensa-start" id="startPressSequence">
+                    <div class="sec-legend">Presiona Start</div>
+                    <div class="sec-number">?</div>
+                </div>
+            </div>
+            <div class="casilla right" data-id="8">🍉</div>
+
+            <div class="casilla left" data-id="23">🍎</div>
+            <div class="casilla right" data-id="9">🍒</div>
+
+            <div class="casilla left" data-id="22">ONCE<br>MORE</div>
+            <div class="casilla right" data-id="10">ONCE<br>MORE</div>
+
+            <div class="casilla left" data-id="21">🍒</div>
+            <div class="casilla right" data-id="11">🍎</div>
+
+            <div class="casilla left" data-id="20">⭐</div>
+            <div class="casilla right" data-id="12">🍒</div>
+
+            <div class="casilla bottom" data-id="19">🍇</div>
+            <div class="casilla bottom" data-id="18">🍒</div>
+            <div class="casilla bottom" data-id="17">🍎</div>
+            <div class="casilla bottom" data-id="16">7️⃣</div>
+            <div class="casilla bottom" data-id="15">🍒</div>
+            <div class="casilla bottom" data-id="14">🔔</div>
+            <div class="casilla bottom" data-id="13">🍊</div>
+
+        </div>
+
+        <div class="panel-apuestas">
+            <div class="action-buttons-container">
+                <button class="btn-reset" id="btn-reset">RESET</button>
+                <button class="btn-cobrar" id="btn-cobrar">COBRAR</button>
+                <div class="btn-group-doble">
+                    <button id="btn-insert-coin" class="btn-amarillo">INSERT COIN</button>
+                    <button class="btn-doble">&lt;</button>
+                    <button class="btn-doble">&gt;</button>
+                    <button class="btn-iniciar" id="btn-start" disabled>START</button> 
+                </div>
+            </div>
+                
+            <div class="bet-row">
+                <div class="bet-block">
+                    <div class="premio-label">2</div>
+                    <div class="boton-apuesta bet-cereza" data-fruta="cereza">🍒<br>0</div>
+                </div>
+                <div class="bet-block">
+                    <div class="premio-label">5</div>
+                    <div class="boton-apuesta bet-manzana" data-fruta="manzana">🍎<br>0</div>
+                </div>
+                <div class="bet-block">
+                    <div class="premio-label">10</div>
+                    <div class="boton-apuesta bet-naranja" data-fruta="naranja">🍊<br>0</div>
+                </div>
+                <div class="bet-block">
+                    <div class="premio-label">15</div>
+                    <div class="boton-apuesta bet-uva" data-fruta="uva">🍇<br>0</div>
+                </div>
+                <div class="bet-block">
+                    <div class="premio-label">20</div>
+                    <div class="boton-apuesta bet-campana" data-fruta="campana">🔔<br>0</div>
+                </div>
+                <div class="bet-block">
+                    <div class="premio-label">50/100</div>
+                    <div class="boton-apuesta bet-bar" data-fruta="bar">BAR<br>0</div>
+                </div>
+                <div class="bet-block">
+                    <div class="premio-label">40</div>
+                    <div class="boton-apuesta bet-siete" data-fruta="siete">7️⃣<br>0</div>
+                </div>
+                <div class="bet-block">
+                    <div class="premio-label">40</div>
+                    <div class="boton-apuesta bet-estrella" data-fruta="estrella">⭐<br>0</div>
+                </div>
+                <div class="bet-block">
+                    <div class="premio-label">20</div>
+                    <div class="boton-apuesta bet-sandia" data-fruta="sandia">🍉<br>0</div>
+                </div>
+            </div>
+        </div>
+    </main>
+<script src="script.js"></script>
+</body>
+</html>
