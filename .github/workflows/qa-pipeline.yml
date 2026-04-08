@@ -22,7 +22,7 @@ jobs:
     - name: Instalar dependencias
       run: |
         python -m pip install --upgrade pip
-        pip install pytest pytest-bdd playwright
+        pip install pytest pytest-bdd playwright pytest-playwright
         playwright install chromium
 
     - name: Correr Pruebas E2E (Cucumber)
