@@ -174,7 +174,7 @@ btnStart.addEventListener('click', () => {
     // Si estamos esperando el número del minijuego
     if (estadoJuego === 'ESPERANDO_MINIJUEGO') {
         clearInterval(miniGameInterval);
-        girosPendientesMinijuego = miniGameNum; 
+        girosPendientesMinijuego = parseInt(centroNumber.innerText); 
         
         centroLegend.innerText = "¡TIROS!"; // <- CAMBIO DE TEXTO AQUÍ
         estadoJuego = 'NORMAL'; 
@@ -193,6 +193,10 @@ function ejecutarGirosMinijuego() {
     if (girosPendientesMinijuego > 0) {
         girosPendientesMinijuego--;
         iniciarGiro(true, true); // Giro gratis y más rápido
+    } else {
+        // Al terminar toda la ráfaga de minijuego, actualizamos la UI y permitimos cobrar
+        esApuestaPersistente = true;
+        actualizarUI();
     }
 }
 
@@ -212,6 +216,8 @@ function iniciarGiro(esGiroGratis = false, esRapido = false) {
                 return;
             }
         }
+
+        document.querySelectorAll('.casilla').forEach(c => c.classList.remove('ganadora'));
     } 
     // Si es giro gratis, MANTENEMOS la persistencia de la apuesta intacta
 
@@ -255,12 +261,26 @@ function evaluarPremio(idGanador, esParteDeMinijuego = false) {
     let frutaApostada = resultado;
     if (resultado === 'bar50' || resultado === 'bar100') frutaApostada = 'bar';
     
+    // VALIDACIÓN: ¿Se activa el minijuego?
+    let activarMinijuego = false;
+    
+    if (!esParteDeMinijuego) {
+        if (resultado === 'oncemore') {
+            activarMinijuego = true; // Once More siempre activa el minijuego
+        } else if ((resultado === 'bar50' || resultado === 'bar100') && apuestas['bar'] > 0) {
+            activarMinijuego = true; // BAR solo activa si le apostaste
+        }
+    }
+    
     // Disparador del Minijuego
-    if ((resultado === 'oncemore' || resultado === 'bar50' || resultado === 'bar100') && !esParteDeMinijuego) {
+    if (activarMinijuego) {
         
         if (apuestas[frutaApostada] > 0) {
             ganancias += apuestas[frutaApostada] * paytable[resultado];
         }
+
+        // Iluminamos de verde la casilla que disparó el evento
+        document.querySelector(`.casilla[data-id="${idGanador}"]`).classList.add('ganadora');
 
         estadoJuego = 'ESPERANDO_MINIJUEGO';
         centroLegend.innerText = "PRESIONA START";
@@ -273,13 +293,18 @@ function evaluarPremio(idGanador, esParteDeMinijuego = false) {
             if(miniGameNum > 3) miniGameNum = 1;
         }, 80);
 
-        isSpinning = false; // <--- ¡EL BUGFIX MAESTRO! Liberamos el candado
+        isSpinning = false; 
         actualizarUI();
         return; 
     } 
     
-    // Evaluación Normal
-    if (apuestas[frutaApostada] > 0) {
+    // Evaluación Normal o Tiros de Ráfaga
+    
+    // Iluminamos de verde la casilla premiada para que no se pierda de vista
+    document.querySelector(`.casilla[data-id="${idGanador}"]`).classList.add('ganadora');
+    
+    // BUGFIX: En el minijuego, si cae en Once More "no pasa nada" (no paga, no detona nada)
+    if (resultado !== 'oncemore' && apuestas[frutaApostada] > 0) {
         let premioObtenido = apuestas[frutaApostada] * paytable[resultado];
         ganancias += premioObtenido; 
         console.log(`¡Ganaste ${premioObtenido} con ${resultado}!`);
@@ -289,7 +314,7 @@ function evaluarPremio(idGanador, esParteDeMinijuego = false) {
     
     // Ráfaga de giros (si ganaste 3, ejecuta los que falten)
     if (girosPendientesMinijuego > 0) {
-        setTimeout(ejecutarGirosMinijuego, 500); 
+        setTimeout(ejecutarGirosMinijuego, 400); // Pausa corta para que veas dónde cayó antes de girar de nuevo
     } else {
         esApuestaPersistente = true; 
         actualizarUI();
