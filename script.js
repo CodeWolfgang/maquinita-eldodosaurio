@@ -52,6 +52,69 @@ const centroUI = document.getElementById('startPressSequence');
 const centroLegend = centroUI.querySelector('.sec-legend');
 const centroNumber = centroUI.querySelector('.sec-number');
 
+// AUDIO MANAGER (Administrador de Sonidos)
+const snd = {
+    standby: new Audio('audio/standby.mp3'),
+    insert: new Audio('audio/insert.mp3'),
+    apuesta: new Audio('audio/bet.mp3'),
+    spinNormal: new Audio('audio/spin.mp3'),
+    
+    // --- SONIDOS ALEATORIOS (Agrega tus archivos aquí) ---
+    spinEspecial: [
+        new Audio('audio/spin_special_1.mp3'),
+        new Audio('audio/spin_special_2.mp3')
+    ],
+    win: [
+        new Audio('audio/win_1.mp3'),
+        new Audio('audio/win_2.mp3'),
+        new Audio('audio/win_3.mp3'),
+        new Audio('audio/win_4.mp3')
+    ],
+    lose: [
+        new Audio('audio/lose_1.mp3'),
+        new Audio('audio/lose_2.mp3'),
+        new Audio('audio/lose_3.mp3'),
+        new Audio('audio/lose_4.mp3'),
+        new Audio('audio/lose_5.mp3'),
+        new Audio('audio/lose_6.mp3')
+    ],
+    jackpot: [
+        new Audio('audio/jackpot_1.mp3'),
+        new Audio('audio/jackpot_2.mp3')
+    ]
+};
+
+snd.standby.loop = true;
+snd.spinNormal.loop = true;
+
+// Función para detener los giros (ahora recorre el arreglo de especiales)
+function detenerAudiosGiro() {
+    snd.spinNormal.pause();
+    snd.spinEspecial.forEach(audio => audio.pause()); 
+}
+
+// NUEVA FUNCIÓN MAESTRA: Reproductor Aleatorio
+function reproducirAleatorio(arregloAudios) {
+    if (!arregloAudios || arregloAudios.length === 0) return;
+    
+    // Primero, nos aseguramos de silenciar cualquier audio de esta misma categoría que siga sonando
+    arregloAudios.forEach(audio => {
+        audio.pause();
+        audio.currentTime = 0;
+    });
+    
+    // Elegimos un número al azar basado en la cantidad de audios en la lista
+    const indexAleatorio = Math.floor(Math.random() * arregloAudios.length);
+    arregloAudios[indexAleatorio].play();
+}
+
+// Corta de tajo cualquier sonido de premio anterior
+function silenciarEfectos() {
+    snd.win.forEach(a => { a.pause(); a.currentTime = 0; });
+    snd.lose.forEach(a => { a.pause(); a.currentTime = 0; });
+    snd.jackpot.forEach(a => { a.pause(); a.currentTime = 0; });
+}
+
 // 3. FUNCIONES DE UI
 function actualizarUI() {
     uiCreditos.innerText = creditos;
@@ -78,7 +141,12 @@ function actualizarUI() {
 btnInsertCoin.addEventListener('click', () => {
     if (estadoJuego !== 'NORMAL') return;
     creditos += 10; 
+    
+    // --- AUDIO: Insertar moneda ---
+    snd.insert.currentTime = 0;
+    snd.insert.play();
     actualizarUI();
+    silenciarEfectos();
 });
 
 btnCobrar.addEventListener('click', () => {
@@ -86,8 +154,10 @@ btnCobrar.addEventListener('click', () => {
         creditos += ganancias;
         ganancias = 0;
         actualizarUI();
+        silenciarEfectos();
     }
 });
+
 
 btnReset.addEventListener('click', () => {
     if (estadoJuego !== 'NORMAL' || isSpinning) return;
@@ -114,6 +184,9 @@ botonesApuesta.forEach(boton => {
         if (apuestas[fruta] < 9 && creditos > 0) {
             apuestas[fruta]++;
             creditos--;
+            // --- AUDIO: Clic de apuesta ---
+            snd.apuesta.currentTime = 0;
+            snd.apuesta.play();
             actualizarUI();
         }
     });
@@ -222,7 +295,19 @@ function iniciarGiro(esGiroGratis = false, esRapido = false) {
     // Si es giro gratis, MANTENEMOS la persistencia de la apuesta intacta
 
     isSpinning = true;
-    actualizarUI(); 
+    actualizarUI();
+
+    // --- LIMPIEZA DE CACOFONÍA ---
+    silenciarEfectos(); // Callamos cualquier victoria o derrota anterior
+
+    // --- INICIO DE AUDIO DE GIRO ---
+    if (esRapido) {
+        reproducirAleatorio(snd.spinEspecial); // Ruleta rápida del minijuego
+    } else {
+        snd.spinNormal.currentTime = 0;
+        snd.spinNormal.play(); // Ruleta normal
+    }
+    // -------------------------------
 
     const casillaGanadora = Math.floor(Math.random() * 24) + 1;
     
@@ -248,6 +333,9 @@ function iniciarGiro(esGiroGratis = false, esRapido = false) {
         if (pasoActual < pasosTotales) {
             setTimeout(moverLuz, velocidad);
         } else {
+            // --- FIN DE AUDIO DE GIRO ---
+            detenerAudiosGiro();
+            // ----------------------------
             evaluarPremio(casillaGanadora, esRapido);
         }
     }
@@ -277,6 +365,12 @@ function evaluarPremio(idGanador, esParteDeMinijuego = false) {
         
         if (apuestas[frutaApostada] > 0) {
             ganancias += apuestas[frutaApostada] * paytable[resultado];
+            
+            // --- AUDIO JACKPOT FIESTA ---
+            if (resultado === 'bar50' || resultado === 'bar100') {
+                reproducirAleatorio(snd.jackpot);
+            }
+            // ----------------------------
         }
 
         // Iluminamos de verde la casilla que disparó el evento
@@ -303,11 +397,23 @@ function evaluarPremio(idGanador, esParteDeMinijuego = false) {
     // Iluminamos de verde la casilla premiada para que no se pierda de vista
     document.querySelector(`.casilla[data-id="${idGanador}"]`).classList.add('ganadora');
     
-    // BUGFIX: En el minijuego, si cae en Once More "no pasa nada" (no paga, no detona nada)
-    if (resultado !== 'oncemore' && apuestas[frutaApostada] > 0) {
-        let premioObtenido = apuestas[frutaApostada] * paytable[resultado];
-        ganancias += premioObtenido; 
-        console.log(`¡Ganaste ${premioObtenido} con ${resultado}!`);
+    // En el minijuego, si cae en Once More "no pasa nada" (no paga, no detona nada)
+    if (resultado !== 'oncemore') {
+        if (apuestas[frutaApostada] > 0) {
+            let premioObtenido = apuestas[frutaApostada] * paytable[resultado];
+            ganancias += premioObtenido; 
+            console.log(`¡Ganaste ${premioObtenido} con ${resultado}!`);
+            
+            // --- AUDIO VICTORIA ---
+            reproducirAleatorio(snd.win);
+            // ----------------------
+        } else {
+            // --- AUDIO DERROTA (Solo en tiros normales perdidos) ---
+            if (!esParteDeMinijuego) {
+                reproducirAleatorio(snd.lose);
+            }
+            // -------------------------------------------------------
+        }
     }
 
     isSpinning = false;
